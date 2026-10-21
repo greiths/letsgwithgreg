@@ -28,3 +28,9 @@ Annual premiums and living benefits are entered from the official proposal.
 4. Copy the Web app URL into `SHEET_URL` in `index.html` (and set `SHEET_TOKEN` to the same token). Upload `index.html` again.
 
 Every click on **Save to Sheet** adds one row. If offline, records are kept on the device and uploaded automatically when back online.
+
+## Updating premium rates from new proposals
+1. Convert proposals to text: `pdftotext -layout proposal.pdf proposal.txt` (put all .txt files in one folder).
+2. `python3 tools/build_rates.py <folder> > rates.json` – prints CONFLICT lines if two proposals disagree.
+3. `python3 tools/inject_rates.py rates.json index.html`
+4. Check: `python3 tools/make_cases.py <folder> > cases.json` then `node tools/regress.js cases.json $(pwd)/index.html` (needs Playwright).

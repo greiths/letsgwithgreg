@@ -62,6 +62,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
 .money::before{content:"₱";position:absolute;left:clamp(10px,.8vw,13px);top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
 .money input{padding-left:clamp(24px,1.8vw,30px)}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg.seg3{grid-template-columns:1fr 1fr 1fr}
 .seg button{border:0;background:transparent;border-radius:999px;justify-content:center;padding:clamp(7px,.55vw,10px)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#3b2c00}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
@@ -209,8 +210,9 @@ details.rates .field{margin-bottom:8px}
           <h2>Sun Fit and Well Advantage</h2>
           <div class="field">
             <label>Payment term</label>
-            <div class="seg" role="group" aria-label="Payment term">
+            <div class="seg seg3" role="group" aria-label="Payment term">
               <button type="button" data-plan="10">10 years</button>
+              <button type="button" data-plan="15">15 years</button>
               <button type="button" data-plan="20">20 years</button>
             </div>
             <small>Living benefits are dividend-based; type them from the proposal.</small>
@@ -244,7 +246,7 @@ details.rates .field{margin-bottom:8px}
           </div>
           <div class="field"><label for="bPrem">Annual premium (current 5-yr term)</label><div class="money"><input id="bPrem" type="text" inputmode="numeric"></div>
             <div class="rate-info" id="bRateInfo"></div>
-            <label class="check"><input type="checkbox" id="bRiders"> Include ADB + TDB riders</label>
+            <div class="row2"><label class="check"><input type="checkbox" id="bAdb"> ADB rider</label><label class="check"><input type="checkbox" id="bTdb"> TDB rider</label></div>
             <label class="check"><input type="checkbox" id="bManual"> Type premium manually</label>
             <small>Premium increases every 5 years based on attained age.</small></div>
 
@@ -337,21 +339,25 @@ details.rates .field{margin-bottom:8px}
   "use strict";
   /* Rates per ₱1,000 of coverage (HIB: per ₱1 of daily benefit): plan > component > gender-class > age.
      Extracted from 20+ Sun Life proposals (2021–2026). LifeAssure rates come from the proposals' 5-year renewal schedules.
-     SFWA ADDD rates are from 2026 proposals; HIB rider rates are shared by SFWA 10 and 20. */
-  var HIB_RATES = {"F-NS":{"19":1.82,"23":2.08,"26":2.3,"27":2.35,"32":2.49},"M-NS":{"25":1.82,"28":1.86,"32":1.92,"36":2.04},"M-S":{"25":1.99}};
+     SFWA ADDD rates are from 2026 proposals; HIB rider rates are shared by SFWA 10/15/20.
+     LifeAssure base rates are stored at the < ₱1M band; ₱1M and up is 0.40 per ₱1,000 lower (verified on 1M proposals).
+     Regenerate with tools/build_rates.py + tools/inject_rates.py. */
+  var HIB_RATES = {"F-NS":{"19":1.82,"23":2.08,"26":2.3,"27":2.35,"32":2.49,"37":2.61},"M-NS":{"25":1.82,"27":1.84,"28":1.86,"32":1.92,"34":1.95,"36":2.04},"M-S":{"25":1.99}};
   var RATES = {
-    SFWA10: {"base":{"F-NS":{"0":34.74,"19":45.46,"23":48.88,"26":51.92,"27":53.17,"32":59.7},"M-NS":{"0":35.05,"28":52.97,"32":57.99,"36":63.7},"M-S":{"25":53.93}},"addd":{"F-NS":{"27":4.61},"M-NS":{"32":4.51,"36":4.44}},"tdb":{"F-NS":{"0":1.67,"19":1.41,"23":1.33,"26":1.28,"27":1.27,"32":1.23},"M-NS":{"0":1.67,"28":1.27,"32":1.23,"36":1.27},"M-S":{"25":1.4}},"hib":HIB_RATES},
-    SFWA20: {"base":{"M-NS":{"25":29.04}},"tdb":{"M-NS":{"25":0.78}},"hib":HIB_RATES},
-    ASSURE: {"base":{"F-NS":{"23":7.86,"28":8.17,"33":8.7,"38":10.12,"43":12.19,"48":15.78,"53":20.62,"58":27.72,"63":46.47,"68":61.88,"26":8.1,"31":8.39,"36":9.37,"41":11.31,"46":13.97,"51":18.59,"56":24.34,"61":36.22,"66":58.44},"M-NS":{"28":8.28,"33":8.82,"38":10.56,"43":14.6,"48":19.93,"53":27.93,"58":34.56,"63":59.82,"68":80.65},"M-S":{"25":9.0,"30":9.75,"35":10.74,"40":15.26,"45":23.29,"50":33.04,"55":47.04,"60":55.38,"65":115.04}},"adb":{"F-NS":{"23":1.37,"28":1.2,"33":1.11,"38":1.07,"43":1.06,"48":1.08,"53":1.26,"58":1.55,"63":1.82,"68":2.07,"26":1.25,"31":1.13,"36":1.08,"41":1.05,"46":1.07,"51":1.15,"56":1.42,"61":1.73,"66":1.97},"M-NS":{"23":1.37,"28":1.2,"33":1.11,"38":1.07,"43":1.06,"48":1.08,"53":1.26,"58":1.55,"63":1.82,"68":2.07,"26":1.25,"31":1.13,"36":1.08,"41":1.05,"46":1.07,"51":1.15,"56":1.42,"61":1.73,"66":1.97},"F-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92},"M-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92}},"tdb":{"F-NS":{"23":0.63,"28":0.71,"33":0.88,"38":1.16,"43":1.35,"48":1.94,"53":3.02,"58":6.78,"26":0.66,"31":0.8,"36":1.03,"41":1.32,"46":1.57,"51":2.55,"56":4.59},"M-NS":{"23":0.63,"28":0.71,"33":0.88,"38":1.16,"43":1.35,"48":1.94,"53":3.02,"58":6.78,"26":0.66,"31":0.8,"36":1.03,"41":1.32,"46":1.57,"51":2.55,"56":4.59},"F-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"55":5.05},"M-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"55":5.05}}}
+    SFWA10: {"base":{"F-NS":{"0":34.74,"1":35.14,"7":37.56,"19":45.46,"23":48.88,"26":51.92,"27":53.17,"32":59.7,"37":66.94},"M-NS":{"0":35.05,"4":36.59,"10":38.91,"27":51.83,"28":52.97,"32":57.99,"34":60.73,"36":63.7},"M-S":{"25":53.93}},"tdb":{"F-NS":{"0":1.67,"1":1.67,"7":1.63,"19":1.41,"23":1.33,"26":1.28,"27":1.27,"32":1.23,"37":1.33},"M-NS":{"0":1.67,"4":1.68,"10":1.56,"27":1.27,"28":1.27,"32":1.23,"34":1.22,"36":1.27},"M-S":{"25":1.4}},"addd":{"M-NS":{"32":4.51,"36":4.44},"F-NS":{"27":4.61}},"hib":HIB_RATES},
+    SFWA15: {"base":{"M-NS":{"10":28.52,"34":43.52}},"tdb":{"M-NS":{"10":1.16,"34":0.9}},"hib":HIB_RATES},
+    SFWA20: {"base":{"M-NS":{"10":23.6,"25":29.04,"34":35.12}},"tdb":{"M-NS":{"10":0.96,"25":0.78,"34":0.83}},"hib":HIB_RATES},
+    ASSURE: {"base":{"F-NS":{"23":7.86,"26":8.1,"28":8.17,"31":8.39,"33":8.7,"36":9.37,"38":10.12,"41":11.31,"43":12.19,"46":13.97,"48":15.78,"51":18.59,"53":20.62,"56":24.34,"58":27.72,"61":36.22,"63":46.47,"66":58.44,"68":61.88},"M-NS":{"28":8.28,"33":8.82,"34":8.97,"38":10.56,"39":11.04,"43":14.6,"44":15.62,"48":19.93,"49":21.02,"53":27.93,"54":29.87,"58":34.56,"59":35.48,"63":59.82,"64":67.63,"68":80.65,"69":82.38},"M-S":{"25":9.0,"30":9.75,"35":10.74,"40":15.26,"45":23.29,"50":33.04,"55":47.04,"60":55.38,"65":115.04},"F-S":{"52":26.2,"57":33.51,"62":51.85,"67":78.61}},"tdb":{"F-NS":{"23":0.63,"26":0.66,"28":0.71,"31":0.8,"33":0.88,"34":0.92,"36":1.03,"38":1.16,"39":1.23,"41":1.32,"43":1.35,"44":1.36,"46":1.57,"48":1.94,"49":2.13,"51":2.55,"53":3.02,"54":3.26,"56":4.59,"58":6.78,"59":7.88},"M-NS":{"23":0.63,"26":0.66,"28":0.71,"31":0.8,"33":0.88,"34":0.92,"36":1.03,"38":1.16,"39":1.23,"41":1.32,"43":1.35,"44":1.36,"46":1.57,"48":1.94,"49":2.13,"51":2.55,"53":3.02,"54":3.26,"56":4.59,"58":6.78,"59":7.88},"F-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"52":3.5,"55":5.05,"57":7.08},"M-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"52":3.5,"55":5.05,"57":7.08}},"adb":{"F-NS":{"23":1.37,"26":1.25,"28":1.2,"31":1.13,"33":1.11,"36":1.08,"38":1.07,"41":1.05,"43":1.06,"46":1.07,"48":1.08,"51":1.15,"53":1.26,"56":1.42,"58":1.55,"61":1.73,"63":1.82,"66":1.97,"68":2.07},"M-NS":{"23":1.37,"26":1.25,"28":1.2,"31":1.13,"33":1.11,"36":1.08,"38":1.07,"41":1.05,"43":1.06,"46":1.07,"48":1.08,"51":1.15,"53":1.26,"56":1.42,"58":1.55,"61":1.73,"63":1.82,"66":1.97,"68":2.07},"F-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92},"M-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92}}}
   };
   var QUARTERLY = 0.275; // quarterly premium = annual × 0.275 (21,240 → 5,841)
   var PRESETS = {
     "10": { aPrem:20479, aLb30:314467, aLb40:449997 },
+    "15": {},
     "20": { aPrem:11358, aLb30:287867, aLb40:449997 }
   };
   var DEFAULTS = {
     client:"MR. VALUED CLIENT", age:35, date:"", plan:"10", gender:"M", smoker:"NS",
-    addd:true, tdb:true, aManual:false, bManual:false, bRiders:true,
+    addd:true, tdb:true, aManual:false, bManual:false, bAdb:true, bTdb:true,
     aCov:300000, aPrem:20479, aPost:5000, aHib:500, aLb30:314467, aLb40:449997,
     bCov:500000, bPrem:5585,
     advisor:"ROMEL GRIEGO", mobile:"0961-414-4068", email:"romel.r.griego@sunlife.com.ph"
@@ -359,7 +365,7 @@ details.rates .field{margin-bottom:8px}
   var MONEY = ["aCov","aPrem","aPost","aHib","aLb30","aLb40","bCov","bPrem"];
   var TEXT = ["client","age","date","advisor","mobile","email"];
   var KEY = "policySim.v2";
-  var FLAGS = ["addd","tdb","aManual","bManual","bRiders"];
+  var FLAGS = ["addd","tdb","aManual","bManual","bAdb","bTdb"];
   /* Paste your Google Apps Script Web App URL here (see google-apps-script.gs) */
   var SHEET_URL = "https://script.google.com/macros/s/AKfycbwXjIiJqF9ugT7C5CufCalJF_6n9ps0uPyHwF3BDia_BWfIPsfMBh1bpNce62BQBf6OBg/exec";
   var SHEET_TOKEN = "Backspace8!"; // must match TOKEN in google-apps-script.gs
@@ -421,16 +427,35 @@ details.rates .field{margin-bottom:8px}
     var C = (allRates()[plan]||{})[comp]||{}, key = S.gender+"-"+S.smoker;
     var r = interp(C[key], age, (comp==="base"||plan==="ASSURE")?"log":"lin", rider);
     if (!r && rider){ r = interp(C[(S.gender==="F"?"M":"F")+"-"+S.smoker], age, "lin", true); if (r) r.est = true; }
+    if (!r && (plan==="SFWA15"||plan==="SFWA20") && (comp==="base"||comp==="tdb")) r = viaSfwa10(plan, comp, age, rider);
     return r;
+  }
+  /* SFWA 15/20 fallback: SFWA 10 rate × the 15/20-vs-10 ratio seen in proposals for the same person/age */
+  function viaSfwa10(plan, comp, age, rider){
+    var r10 = lookup("SFWA10", comp, age, rider); if (!r10) return null;
+    var C = (allRates()[plan]||{})[comp]||{}, pts = {}, saveG = S.gender, saveS = S.smoker;
+    Object.keys(C).forEach(function(k){ Object.keys(C[k]).forEach(function(a){
+      S.gender = k[0]; S.smoker = k.slice(2);
+      var base10 = interp(((allRates().SFWA10||{})[comp]||{})[k], +a, comp==="base"?"log":"lin", false);
+      if (base10) pts[a] = C[k][a] / base10.v;
+    }); });
+    S.gender = saveG; S.smoker = saveS;
+    var ratio = interp(pts, age, "lin", false) || nearest(pts, age);
+    return ratio ? {v: Math.round(r10.v*ratio.v*100)/100, est:true} : null;
+  }
+  function nearest(tbl, age){
+    var best=null; Object.keys(tbl).forEach(function(a){ if (best===null || Math.abs(a-age) < Math.abs(best-age)) best=+a; });
+    return best===null ? null : {v:tbl[best], est:true};
   }
   function per1000(rate, fa){ return rate ? Math.round(rate*fa/10)/100 : 0; }
   function assureAt(a){
     var b = lookup("ASSURE","base",a,false); if (!b) return null;
-    var ad = S.bRiders ? lookup("ASSURE","adb",a,true) : null;
-    var td = (S.bRiders && a<60) ? lookup("ASSURE","tdb",a,true) : null;
-    var o = { base:per1000(b.v,S.bCov), adb: ad?per1000(ad.v,S.bCov):0, tdb: td?per1000(td.v,S.bCov):0, est: b.est || !!(ad&&ad.est) || !!(td&&td.est), missing:[] };
-    if (S.bRiders && !ad) o.missing.push("ADB");
-    if (S.bRiders && a<60 && !td) o.missing.push("TDB");
+    var ad = S.bAdb ? lookup("ASSURE","adb",a,true) : null;
+    var td = (S.bTdb && a<60) ? lookup("ASSURE","tdb",a,true) : null;
+    var band = S.bCov >= 1000000 ? 0.40 : 0;
+    var o = { base:per1000(b.v-band,S.bCov), adb: ad?per1000(ad.v,S.bCov):0, tdb: td?per1000(td.v,S.bCov):0, est: b.est || !!(ad&&ad.est) || !!(td&&td.est), missing:[] };
+    if (S.bAdb && !ad) o.missing.push("ADB");
+    if (S.bTdb && a<60 && !td) o.missing.push("TDB");
     o.total = o.base + o.adb + o.tdb;
     return o;
   }
@@ -540,8 +565,8 @@ details.rates .field{margin-bottom:8px}
       ["Hospital income benefit / day (optional)", v(A.hib), null],
       ["g","Annual premium breakdown"],
       ["Basic plan", A.brk ? peso(A.brk.base) : "<span class='sub'>see total</span>", B.auto ? peso(B.first.base) : "<span class='sub'>see total</span>"],
-      ["Accidental rider <small class='sub'>&nbsp;(ADDD / ADB)</small>", A.brk ? (A.brk.addd ? peso(A.brk.addd) : null) : (S.addd ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.adb ? peso(B.first.adb) : null) : (S.bRiders ? "<span class='sub'>included</span>" : null)],
-      ["TDB rider", A.brk ? (A.brk.tdb ? peso(A.brk.tdb) : null) : (S.tdb ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.tdb ? peso(B.first.tdb) : null) : (S.bRiders ? "<span class='sub'>included</span>" : null)],
+      ["Accidental rider <small class='sub'>&nbsp;(ADDD / ADB)</small>", A.brk ? (A.brk.addd ? peso(A.brk.addd) : null) : (S.addd ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.adb ? peso(B.first.adb) : null) : (S.bAdb ? "<span class='sub'>included</span>" : null)],
+      ["TDB rider", A.brk ? (A.brk.tdb ? peso(A.brk.tdb) : null) : (S.tdb ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.tdb ? peso(B.first.tdb) : null) : (S.bTdb ? "<span class='sub'>included</span>" : null)],
       ["HIB rider", A.brk ? (A.brk.hib ? peso(A.brk.hib) : null) : (S.aHib ? "<span class='sub'>included</span>" : null), null],
       ["Total annual premium", "<b>"+peso(A.prem)+"</b>", "<b>"+peso(B.prem)+"</b>"],
       ["g","Living benefits"],
@@ -723,6 +748,7 @@ details.rates .field{margin-bottom:8px}
   };
   addEventListener("online", function(){ flush(); });
 
+  window.policySim = { compute: function(){ return compute(); }, set: function(o){ Object.assign(S,o); fillInputs(); render(); } }; // used by tests
   load(); fillInputs(); render(); renderRateList(); net(); setQ(getQ()); flush();
 })();
 </script>

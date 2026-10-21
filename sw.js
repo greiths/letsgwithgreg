@@ -1,6 +1,6 @@
 // Offline cache for the Health Plan Comparison simulator.
 // Bump VERSION whenever you upload a new index.html so phones get the update.
-const VERSION = "policy-sim-v6";
+const VERSION = "policy-sim-v8";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", e => {
