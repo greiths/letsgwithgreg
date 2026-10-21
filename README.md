@@ -20,3 +20,11 @@ When you update `index.html`, also change `VERSION` in `sw.js` so devices fetch 
 | Palliative benefit | = 10% × coverage |
 
 Annual premiums and living benefits are entered from the official proposal.
+
+## Save simulations to Google Sheet
+1. Create a Google Sheet in your Drive → **Extensions → Apps Script**.
+2. Paste `google-apps-script.gs`, change `TOKEN`, save.
+3. **Deploy → New deployment → Web app** · Execute as **Me** · Who has access **Anyone** → Deploy → authorize.
+4. Copy the Web app URL into `SHEET_URL` in `index.html` (and set `SHEET_TOKEN` to the same token). Upload `index.html` again.
+
+Every click on **Save to Sheet** adds one row. If offline, records are kept on the device and uploaded automatically when back online.

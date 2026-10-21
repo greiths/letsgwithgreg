@@ -171,6 +171,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       <button type="button" id="btnReset">Reset</button>
       <button type="button" id="btnShare">Copy link</button>
       <button type="button" id="btnTheme" aria-label="Toggle theme">◐ Theme</button>
+      <button type="button" id="btnSave">Save to Sheet<span id="qCount"></span></button>
       <button type="button" class="primary" id="btnPrint">Print / Save PDF</button>
     </div>
   </header>
@@ -286,6 +287,9 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
   var MONEY = ["aCov","aPrem","aPost","aHib","aLb30","aLb40","bCov","bPrem"];
   var TEXT = ["client","age","date","advisor","mobile","email"];
   var KEY = "policySim.v2";
+  /* Paste your Google Apps Script Web App URL here (see google-apps-script.gs) */
+  var SHEET_URL = "https://script.google.com/macros/s/AKfycbwXjIiJqF9ugT7C5CufCalJF_6n9ps0uPyHwF3BDia_BWfIPsfMBh1bpNce62BQBf6OBg/exec";
+  var SHEET_TOKEN = "Backspace8!"; // must match TOKEN in google-apps-script.gs
   var S = {};
 
   function $(id){ return document.getElementById(id); }
@@ -467,7 +471,39 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
   }
 
-  load(); fillInputs(); render(); net();
+  /* ---- save to Google Sheet (queued while offline) ---- */
+  var QKEY = KEY + ".queue";
+  function getQ(){ try { return JSON.parse(localStorage.getItem(QKEY)||"[]"); } catch(e){ return []; } }
+  function setQ(q){ try { localStorage.setItem(QKEY, JSON.stringify(q)); } catch(e){} $("qCount").textContent = q.length ? " ("+q.length+" pending)" : ""; }
+  function record(){
+    var r = compute(), A=r.A, B=r.B;
+    return {
+      token:SHEET_TOKEN, savedAt:new Date().toISOString(),
+      client:S.client, age:r.age, datePrepared:S.date, plan:"SFWA "+S.plan,
+      sfwaCoverage:A.cov, sfwaPremium:A.prem, yearsToPay:A.years, sfwaTotalPremium:A.totalPaid,
+      cancerBooster:A.booster, guaranteedCash:A.gcb, hibCI:A.hibCI, postHosp:A.post,
+      homeRecovery:A.home, palliative:A.pall, hibPerDay:A.hib, livingBenefit30:A.lb30, livingBenefit40:A.lb40,
+      assureCoverage:B.cov, assurePremium:B.prem,
+      combinedAnnual:A.prem+B.prem, advisor:S.advisor, mobile:S.mobile, email:S.email
+    };
+  }
+  function send(rec){
+    return fetch(SHEET_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(rec)});
+  }
+  function flush(){
+    var q = getQ(); if(!q.length || !navigator.onLine || SHEET_URL.indexOf("http")!==0) return Promise.resolve();
+    var rec = q[0];
+    return send(rec).then(function(){ var q2=getQ(); q2.shift(); setQ(q2); return flush(); }, function(){});
+  }
+  $("btnSave").onclick = function(){
+    if (SHEET_URL.indexOf("http")!==0){ toast("Google Sheet not set up yet – see README"); return; }
+    var q = getQ(); q.push(record()); setQ(q);
+    if (!navigator.onLine){ toast("Offline – saved on device, will upload when online"); return; }
+    flush().then(function(){ toast(getQ().length ? "Saved on device, will retry upload" : "Saved to Google Sheet ✓"); });
+  };
+  addEventListener("online", function(){ flush(); });
+
+  load(); fillInputs(); render(); net(); setQ(getQ()); flush();
 })();
 </script>
 </body>
