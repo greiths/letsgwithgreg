@@ -6,8 +6,8 @@
  *      Execute as: Me   |   Who has access: Anyone
  *    Authorize, then copy the Web app URL into SHEET_URL in index.html.
  */
-const TOKEN = "change-me-123";
-const SHEET_NAME = "Simulations";
+const TOKEN = "Backspace8!";
+const SHEET_NAME = "Sunlife Simulations";
 
 const COLUMNS = [
   ["savedAt","Saved at"],["client","Client"],["age","Age"],["gender","Gender"],["smoker","Smoker class"],["datePrepared","Date prepared"],["plan","Plan"],
