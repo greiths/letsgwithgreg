@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Health Plan Comparison</title>
+<meta name="description" content="Compare Sun Fit and Well Advantage (10 / 20 pay) against Sun LifeAssure.">
+<meta name="theme-color" content="#f2b705">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --surface-2:#faf8f3; --ink:#1d1b16; --muted:#6b665a;
+  --line:#e6e1d5; --accent:#f2b705; --accent-ink:#5a4300; --accent-soft:#fff5d1;
+  --alt:#2f6f8f; --alt-soft:#e3f0f6; --good:#2e7d4f; --none:#b3ab98;
+  --radius:clamp(8px,0.8vw,14px);
+  --pad:clamp(14px,1.6vw,28px);
+  --fs:clamp(14px,0.95vw,17px);
+  --fs-sm:clamp(12px,0.8vw,14px);
+  --fs-lg:clamp(18px,1.4vw,26px);
+  --fs-xl:clamp(22px,2vw,36px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15140f; --surface:#1f1d17; --surface-2:#26241d; --ink:#f2efe6; --muted:#a8a191;
+  --line:#37342a; --accent:#f2b705; --accent-ink:#ffd95a; --accent-soft:#3a3010;
+  --alt:#7cc0de; --alt-soft:#16303b; --good:#6fcf97; --none:#6b665a;
+}}
+:root[data-theme="dark"]{
+  --bg:#15140f; --surface:#1f1d17; --surface-2:#26241d; --ink:#f2efe6; --muted:#a8a191;
+  --line:#37342a; --accent:#f2b705; --accent-ink:#ffd95a; --accent-soft:#3a3010;
+  --alt:#7cc0de; --alt-soft:#16303b; --good:#6fcf97; --none:#6b665a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 var(--fs)/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{width:min(96vw,1600px);margin:0 auto;padding:clamp(16px,2vw,32px) 0 4vw}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:2vw;flex-wrap:wrap;margin-bottom:clamp(14px,1.6vw,26px)}
+.brand{display:flex;align-items:center;gap:clamp(10px,1vw,16px)}
+.mark{width:clamp(36px,2.8vw,48px);height:clamp(36px,2.8vw,48px);border-radius:var(--radius);background:var(--accent);display:grid;place-items:center;color:#3b2c00;font-weight:800;font-size:var(--fs-lg)}
+h1{font-size:var(--fs-xl);margin:0;line-height:1.1;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:var(--fs-sm)}
+.actions{display:flex;gap:.6vw;flex-wrap:wrap}
+button,.btn{font:inherit;font-size:var(--fs-sm);font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:clamp(8px,.6vw,11px) clamp(12px,1vw,18px);border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#3b2c00}
+.status{font-size:var(--fs-sm);color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good)}
+.dot.off{background:#d9822b}
+
+.layout{display:grid;grid-template-columns:minmax(300px,26vw) 1fr;gap:clamp(14px,1.6vw,28px);align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:var(--pad)}
+.inputs{position:sticky;top:1vw;max-height:calc(100vh - 2vw);overflow:auto}
+.inputs h2{font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:clamp(14px,1.4vw,22px) 0 8px;font-weight:700}
+.inputs h2:first-child{margin-top:0}
+.field{display:grid;gap:4px;margin-bottom:clamp(10px,.8vw,14px)}
+.field label{font-size:var(--fs-sm);font-weight:600}
+.field small{color:var(--muted);font-size:clamp(11px,.72vw,13px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,.8vw,12px)}
+input,select{font:inherit;width:100%;padding:clamp(8px,.6vw,11px) clamp(10px,.8vw,13px);border:1px solid var(--line);border-radius:calc(var(--radius) * .7);background:var(--surface-2);color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.money{position:relative}
+.money::before{content:"₱";position:absolute;left:clamp(10px,.8vw,13px);top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.money input{padding-left:clamp(24px,1.8vw,30px)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:999px;justify-content:center;padding:clamp(7px,.55vw,10px)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#3b2c00}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{padding:5px 11px;font-weight:500}
+.note{font-size:clamp(11px,.72vw,13px);color:var(--muted);background:var(--surface-2);border:1px dashed var(--line);border-radius:calc(var(--radius) * .7);padding:10px 12px}
+
+/* Sheet */
+.sheet{padding:0;overflow:hidden}
+.sheet-head{padding:var(--pad);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:2vw;flex-wrap:wrap;align-items:flex-end;background:linear-gradient(135deg,var(--accent-soft),transparent 70%)}
+.eyebrow{font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.1em;color:var(--accent-ink);font-weight:700}
+.sheet-head h2{margin:4px 0 0;font-size:var(--fs-xl);line-height:1.15}
+.meta{display:grid;grid-template-columns:auto auto;gap:2px 1.2vw;font-size:var(--fs-sm)}
+.meta dt{color:var(--muted)} .meta dd{margin:0;font-weight:600;text-align:right}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.kpi{background:var(--surface);padding:clamp(12px,1.2vw,20px) var(--pad)}
+.kpi .k{font-size:var(--fs-sm);color:var(--muted)}
+.kpi .v{font-size:var(--fs-lg);font-weight:750;font-variant-numeric:tabular-nums;line-height:1.25}
+.kpi .v small{display:block;font-size:var(--fs-sm);font-weight:500;color:var(--muted)}
+
+.plans{display:grid;grid-template-columns:minmax(0,1.25fr) 1fr 1fr}
+.cell{padding:clamp(9px,.75vw,13px) var(--pad);border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;display:flex;align-items:center}
+.cell.lbl{color:var(--muted);font-size:var(--fs-sm);font-weight:600}
+.cell.a{background:color-mix(in srgb,var(--accent-soft) 45%,transparent);font-weight:650}
+.cell.b{font-weight:650}
+.cell.none{color:var(--none);font-weight:500}
+.cell.hd{flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:2px;border-bottom:2px solid var(--ink)}
+.cell.hd .pn{font-size:var(--fs-lg);font-weight:800;line-height:1.15}
+.cell.hd .pt{font-size:clamp(11px,.72vw,13px);color:var(--muted);font-weight:500}
+.tag{display:inline-block;font-size:clamp(10px,.65vw,12px);font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.tag.a{background:var(--accent);color:#3b2c00}
+.tag.b{background:var(--alt-soft);color:var(--alt)}
+.group{grid-column:1/-1;padding:clamp(12px,1vw,16px) var(--pad) 6px;font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--ink);border-bottom:1px solid var(--line);background:var(--surface-2)}
+.yes{color:var(--good)}
+
+.outlay{padding:var(--pad);border-bottom:1px solid var(--line)}
+.outlay h3,.desc h3{margin:0 0 clamp(10px,1vw,16px);font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.08em}
+.bar{display:grid;grid-template-columns:minmax(110px,12vw) 1fr auto;gap:1vw;align-items:center;margin-bottom:10px;font-size:var(--fs-sm)}
+.track{height:clamp(12px,1vw,18px);background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.fill{height:100%;border-radius:999px;transition:width .35s ease}
+.fill.a{background:var(--accent)} .fill.b{background:var(--alt)} .fill.c{background:var(--good)}
+.bar b{font-variant-numeric:tabular-nums}
+.desc{display:grid;grid-template-columns:1fr 1fr;gap:var(--pad);padding:var(--pad);border-bottom:1px solid var(--line);font-size:var(--fs-sm);color:var(--muted)}
+.desc p{margin:0}
+.foot{padding:var(--pad);display:flex;justify-content:space-between;gap:2vw;flex-wrap:wrap;font-size:var(--fs-sm)}
+.foot .disc{color:var(--muted);max-width:52vw;font-style:italic}
+.toast{position:fixed;left:50%;bottom:3vh;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:var(--fs-sm);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+/* Laptop */
+@media (max-width:1280px){.layout{grid-template-columns:minmax(280px,32vw) 1fr}}
+/* Tablet */
+@media (max-width:1024px){
+  .layout{grid-template-columns:1fr}
+  .inputs{position:static;max-height:none}
+  .inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 3vw}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .foot .disc{max-width:none}
+}
+/* Mobile */
+@media (max-width:640px){
+  .wrap{width:auto;padding:16px}
+  .inputs-grid{display:block}
+  .plans{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .cell.lbl{grid-column:1/-1;border-bottom:0;padding-bottom:0;padding-top:12px}
+  .cell.hd.lblh{display:none}
+  .cell{padding-left:16px;padding-right:16px;font-size:14px}
+  .cell.hd .pn{font-size:17px}
+  .desc{grid-template-columns:1fr}
+  .bar{grid-template-columns:1fr auto}
+  .bar .track{grid-column:1/-1;grid-row:2}
+  .meta dd{text-align:left}
+  .actions{width:100%}
+  .actions button{flex:1;justify-content:center}
+}
+
+/* Print: one clean page, sheet only */
+@media print{
+  @page{size:A4;margin:10mm}
+  :root{--bg:#fff;--surface:#fff;--surface-2:#faf8f3;--ink:#111;--muted:#555;--line:#ddd;--fs:11px;--fs-sm:10px;--fs-lg:15px;--fs-xl:20px;--pad:12px}
+  body{background:#fff}
+  .wrap{width:auto;padding:0}
+  header.top,.inputs,.toast{display:none!important}
+  .layout{display:block}
+  .panel{border:0;border-radius:0}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  .plans{grid-template-columns:1.25fr 1fr 1fr}
+  .cell.lbl{grid-column:auto;padding-top:5px;border-bottom:1px solid var(--line)}
+  .cell{padding-top:5px;padding-bottom:5px}
+  .cell.hd.lblh{display:flex}
+  .desc{grid-template-columns:1fr 1fr}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">₱</div>
+      <div>
+        <h1>Health Plan Comparison</h1>
+        <div class="sub">Policy simulator · <span class="status"><span class="dot" id="netDot"></span><span id="netTxt">Online</span></span></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" id="btnReset">Reset</button>
+      <button type="button" id="btnShare">Copy link</button>
+      <button type="button" id="btnTheme" aria-label="Toggle theme">◐ Theme</button>
+      <button type="button" class="primary" id="btnPrint">Print / Save PDF</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- INPUTS -->
+    <aside class="panel inputs" aria-label="Simulation inputs">
+      <div class="inputs-grid">
+        <div>
+          <h2>Client</h2>
+          <div class="field"><label for="client">Prepared for</label><input id="client" type="text"></div>
+          <div class="row2">
+            <div class="field"><label for="age">Current age</label><input id="age" type="number" min="0" max="99" inputmode="numeric"></div>
+            <div class="field"><label for="date">Date prepared</label><input id="date" type="date"></div>
+          </div>
+
+          <h2>Sun Fit and Well Advantage</h2>
+          <div class="field">
+            <label>Payment term</label>
+            <div class="seg" role="group" aria-label="Payment term">
+              <button type="button" data-plan="10">10 years</button>
+              <button type="button" data-plan="20">20 years</button>
+            </div>
+            <small>Switching loads that plan's preset premium and living benefits.</small>
+          </div>
+          <div class="field"><label for="aCov">Insurance coverage</label>
+            <div class="money"><input id="aCov" type="text" inputmode="numeric"></div>
+            <div class="chips" data-for="aCov"><button type="button">300000</button><button type="button">500000</button><button type="button">1000000</button></div>
+          </div>
+          <div class="field"><label for="aPrem">Annual premium</label><div class="money"><input id="aPrem" type="text" inputmode="numeric"></div><small>From the official proposal for this age and coverage.</small></div>
+          <div class="row2">
+            <div class="field"><label for="aPost">Post hospitalization</label><div class="money"><input id="aPost" type="text" inputmode="numeric"></div></div>
+            <div class="field"><label for="aHib">HIB per day (optional)</label><div class="money"><input id="aHib" type="text" inputmode="numeric"></div></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="aLb30">Living benefit, 30th yr</label><div class="money"><input id="aLb30" type="text" inputmode="numeric"></div></div>
+            <div class="field"><label for="aLb40">Living benefit, 40th yr</label><div class="money"><input id="aLb40" type="text" inputmode="numeric"></div></div>
+          </div>
+        </div>
+        <div>
+          <h2>Sun LifeAssure</h2>
+          <div class="field"><label for="bCov">Insurance coverage</label>
+            <div class="money"><input id="bCov" type="text" inputmode="numeric"></div>
+            <div class="chips" data-for="bCov"><button type="button">500000</button><button type="button">1000000</button><button type="button">2000000</button></div>
+          </div>
+          <div class="field"><label for="bPrem">Annual premium (current 5-yr term)</label><div class="money"><input id="bPrem" type="text" inputmode="numeric"></div><small>Premium increases every 5 years based on attained age.</small></div>
+
+          <h2>Prepared by</h2>
+          <div class="field"><label for="advisor">Advisor name</label><input id="advisor" type="text"></div>
+          <div class="field"><label for="mobile">Mobile no.</label><input id="mobile" type="tel"></div>
+
+          <p class="note">Benefits are computed from coverage using the workbook formulas (cancer booster 50%, guaranteed cash 5%, HIB-CI 0.125%, home recovery 0.0625%, palliative 10%). Premiums and living benefits are typed in from the proposal. Your inputs are saved on this device.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- OUTPUT SHEET -->
+    <main class="panel sheet" id="sheet">
+      <div class="sheet-head">
+        <div>
+          <div class="eyebrow">Comparison of health plans</div>
+          <h2 id="oClient"></h2>
+        </div>
+        <dl class="meta">
+          <dt>Current age</dt><dd id="oAge"></dd>
+          <dt>Date prepared</dt><dd id="oDate"></dd>
+        </dl>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="k">Total coverage (both plans)</div><div class="v" id="kCov"></div></div>
+        <div class="kpi"><div class="k">Combined annual premium</div><div class="v" id="kPrem"></div></div>
+        <div class="kpi"><div class="k">Monthly equivalent</div><div class="v" id="kMonth"></div></div>
+        <div class="kpi"><div class="k">Critical illnesses covered</div><div class="v" id="kCI"></div></div>
+      </div>
+
+      <div class="plans" id="plans"></div>
+
+      <section class="outlay">
+        <h3>Premium outlay vs. living benefits</h3>
+        <div id="bars"></div>
+        <small class="sub" id="outlayNote"></small>
+      </section>
+
+      <section class="desc">
+        <div><h3><span class="tag a" id="dTagA"></span></h3><p id="descA"></p></div>
+        <div><h3><span class="tag b">Sun LifeAssure</span></h3><p>Sun LifeAssure is a non-participating, 5-year renewable term health insurance plan that provides financial protection against any of the covered critical illness conditions or untimely passing, whichever comes first. It offers coverage until age 70 with premiums increasing every 5 years based on attained age.</p></div>
+      </section>
+
+      <footer class="foot">
+        <div><div class="sub">Prepared by</div><strong id="oAdvisor"></strong><div id="oMobile"></div></div>
+        <div class="disc">This is just a summarized illustration. Please refer to proposals for the full features and benefits of the plan.</div>
+      </footer>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  "use strict";
+  var PRESETS = {
+    "10": { aPrem:20479, aLb30:314467, aLb40:449997 },
+    "20": { aPrem:11358, aLb30:287867, aLb40:449997 }
+  };
+  var DEFAULTS = {
+    client:"MR. VALUED CLIENT", age:35, date:"", plan:"10",
+    aCov:300000, aPrem:20479, aPost:5000, aHib:500, aLb30:314467, aLb40:449997,
+    bCov:500000, bPrem:5585,
+    advisor:"ENGR. CARLA GAVINO", mobile:"0917-523-4564"
+  };
+  var MONEY = ["aCov","aPrem","aPost","aHib","aLb30","aLb40","bCov","bPrem"];
+  var TEXT = ["client","age","date","advisor","mobile"];
+  var KEY = "policySim.v1";
+  var S = {};
+
+  function $(id){ return document.getElementById(id); }
+  function peso(n){ n = Math.round((n||0)*100)/100; return "₱" + n.toLocaleString("en-PH",{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2}); }
+  function num(v){ var n = parseFloat(String(v).replace(/[^0-9.]/g,"")); return isFinite(n) ? n : 0; }
+  function today(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+  function fmtDate(s){ if(!s) return ""; var d=new Date(s+"T00:00:00"); return d.toLocaleDateString("en-PH",{year:"numeric",month:"long",day:"numeric"}); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  /* ---- state load: URL hash > saved > defaults ---- */
+  function load(){
+    S = Object.assign({}, DEFAULTS, {date: today()});
+    try { var saved = JSON.parse(localStorage.getItem(KEY)||"null"); if(saved) Object.assign(S, saved); } catch(e){}
+    if (location.hash.length > 1){
+      try { Object.assign(S, JSON.parse(decodeURIComponent(atob(location.hash.slice(1))))); } catch(e){}
+    }
+  }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+  function fillInputs(){
+    MONEY.forEach(function(k){ $(k).value = Number(S[k]).toLocaleString("en-PH"); });
+    TEXT.forEach(function(k){ $(k).value = S[k]; });
+    document.querySelectorAll("[data-plan]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.plan===S.plan); });
+  }
+
+  /* ---- workbook formulas ---- */
+  function compute(){
+    var age = Math.max(0, Math.min(99, parseInt(S.age,10)||0));
+    var aYears = parseInt(S.plan,10);
+    var A = {
+      cov:S.aCov, prem:S.aPrem, years:aYears,
+      adb:S.aCov,                     // =D10
+      booster:S.aCov/2,               // =D10/2
+      gcb:0.05*S.aCov,                // =0.05*D10
+      hibCI:0.00125*S.aCov,           // =0.00125*D10
+      post:S.aPost,
+      home:0.000625*S.aCov,           // =0.000625*D10
+      pall:0.1*S.aCov,                // =0.1*D10
+      hib:S.aHib, ci:114, lb30:S.aLb30, lb40:S.aLb40,
+      covYears:Math.max(0,100-age), totalPaid:S.aPrem*aYears
+    };
+    var bYears = Math.max(0,70-age);
+    var B = {
+      cov:S.bCov, prem:S.bPrem, adb:S.bCov, ci:36,
+      covYears:bYears, firstTerm:S.bPrem*Math.min(5,bYears), atCurrent:S.bPrem*bYears
+    };
+    return {age:age, A:A, B:B};
+  }
+
+  function render(){
+    var r = compute(), A=r.A, B=r.B, age=r.age;
+    $("oClient").textContent = S.client || "—";
+    $("oAge").textContent = age;
+    $("oDate").textContent = fmtDate(S.date);
+    $("oAdvisor").textContent = S.advisor;
+    $("oMobile").textContent = S.mobile;
+    var aName = "Sun Fit and Well Advantage " + S.plan;
+    $("dTagA").textContent = aName;
+    $("descA").textContent = aName + " is a participating, limited-pay whole-life critical illness (CI) product with guaranteed cash benefits. It is designed to provide you with a holistic response to your evolving protection needs, giving you the combined benefit of savings and comprehensive health protection throughout your lifetime.";
+
+    $("kCov").innerHTML = peso(A.cov+B.cov);
+    $("kPrem").innerHTML = peso(A.prem+B.prem);
+    $("kMonth").innerHTML = peso((A.prem+B.prem)/12) + "<small>annual ÷ 12</small>";
+    $("kCI").innerHTML = A.ci + " <small>vs " + B.ci + " on LifeAssure</small>";
+
+    function v(x){ return x ? peso(x) : null; }
+    var rows = [
+      ["g","Coverage & premium"],
+      ["Insurance coverage", peso(A.cov), peso(B.cov)],
+      ["Annual premium", peso(A.prem), peso(B.prem)],
+      ["Years to pay", A.years+" years <small class='sub'>&nbsp;until age "+(age+A.years)+"</small>", "5-year renewable"],
+      ["Years coverage", "Up to age 100 <small class='sub'>&nbsp;("+A.covYears+" yrs)</small>", "Up to age 70 <small class='sub'>&nbsp;("+B.covYears+" yrs)</small>"],
+      ["g","Protection benefits"],
+      ["Accidental death benefit", peso(A.adb), peso(B.adb)],
+      ["Total disability benefit", "<span class='yes'>✓ Included</span>", "<span class='yes'>✓ Included</span>"],
+      ["Critical illness covered", A.ci, B.ci],
+      ["Specific cancer booster", v(A.booster), null],
+      ["Guaranteed cash benefit", v(A.gcb), null],
+      ["HIB (critical illness)", v(A.hibCI), null],
+      ["Post hospitalization", v(A.post), null],
+      ["Home recovery benefit", v(A.home), null],
+      ["Palliative benefit", v(A.pall), null],
+      ["Hospital income benefit / day (optional)", v(A.hib), null],
+      ["g","Living benefits"],
+      ["Total living benefit, 30th year <small class='sub'>&nbsp;(age "+(age+30)+")</small>", v(A.lb30), null],
+      ["Total living benefit, 40th year <small class='sub'>&nbsp;(age "+(age+40)+")</small>", v(A.lb40), null]
+    ];
+    var h = '<div class="cell hd lbl lblh"></div>'
+      + '<div class="cell hd a"><span class="tag a">Plan A</span><span class="pn">'+esc(aName)+'</span><span class="pt">Whole-life CI · participating</span></div>'
+      + '<div class="cell hd b"><span class="tag b">Plan B</span><span class="pn">Sun LifeAssure</span><span class="pt">Term CI · non-participating</span></div>';
+    rows.forEach(function(row){
+      if(row[0]==="g"){ h += '<div class="group">'+row[1]+'</div>'; return; }
+      h += '<div class="cell lbl">'+row[0]+'</div>'
+        + '<div class="cell a'+(row[1]==null?' none':'')+'">'+(row[1]==null?'—':row[1])+'</div>'
+        + '<div class="cell b'+(row[2]==null?' none':'')+'">'+(row[2]==null?'—':row[2])+'</div>';
+    });
+    $("plans").innerHTML = h;
+
+    var items = [
+      ["Plan A total premium", A.totalPaid, "a", A.years+" yrs × "+peso(A.prem)],
+      ["Plan A living benefit, 40th yr", A.lb40, "c", ""],
+      ["Plan B, first 5-yr term", B.firstTerm, "b", Math.min(5,B.covYears)+" yrs × "+peso(B.prem)]
+    ];
+    var max = Math.max.apply(null, items.map(function(i){return i[1];}).concat([1]));
+    $("bars").innerHTML = items.map(function(i){
+      return '<div class="bar"><span>'+i[0]+(i[3]?'<br><small class="sub">'+i[3]+'</small>':'')+'</span>'
+        + '<div class="track"><div class="fill '+i[2]+'" style="width:'+(i[1]/max*100).toFixed(1)+'%"></div></div>'
+        + '<b>'+peso(i[1])+'</b></div>';
+    }).join("");
+    var diff = A.lb40 - A.totalPaid;
+    $("outlayNote").textContent = (diff>=0
+      ? "Plan A's 40th-year living benefit exceeds its total premiums by "+peso(diff)+". "
+      : "Plan A's 40th-year living benefit is "+peso(-diff)+" below its total premiums. ")
+      + "Plan B has no living benefit; keeping it to age 70 at today's rate alone would cost "+peso(B.atCurrent)+", and actual renewals cost more.";
+    document.title = "Health Plan Comparison – " + (S.client||"Client");
+  }
+
+  /* ---- wiring ---- */
+  function onInput(e){
+    var id = e.target.id;
+    if (MONEY.indexOf(id)>-1) S[id] = num(e.target.value);
+    else if (TEXT.indexOf(id)>-1) S[id] = e.target.value;
+    else return;
+    save(); render();
+  }
+  function onBlur(e){
+    if (MONEY.indexOf(e.target.id)>-1) e.target.value = Number(S[e.target.id]).toLocaleString("en-PH");
+  }
+  document.addEventListener("input", onInput);
+  document.addEventListener("focusout", onBlur);
+
+  document.querySelectorAll("[data-plan]").forEach(function(b){
+    b.addEventListener("click", function(){
+      S.plan = b.dataset.plan;
+      Object.assign(S, PRESETS[S.plan]);
+      fillInputs(); save(); render();
+      toast("Loaded SFWA "+S.plan+" preset values");
+    });
+  });
+  document.querySelectorAll(".chips").forEach(function(c){
+    c.addEventListener("click", function(e){
+      if(e.target.tagName!=="BUTTON") return;
+      S[c.dataset.for] = num(e.target.textContent);
+      fillInputs(); save(); render();
+    });
+    c.querySelectorAll("button").forEach(function(b){ b.textContent = "₱"+Number(b.textContent).toLocaleString("en-PH"); });
+  });
+
+  $("btnPrint").onclick = function(){ window.print(); };
+  $("btnReset").onclick = function(){
+    var keep = {advisor:S.advisor, mobile:S.mobile};
+    S = Object.assign({}, DEFAULTS, keep, {date:today()});
+    history.replaceState(null,"",location.pathname);
+    fillInputs(); save(); render(); toast("Reset to defaults (advisor details kept)");
+  };
+  $("btnShare").onclick = function(){
+    var url = location.href.split("#")[0] + "#" + btoa(encodeURIComponent(JSON.stringify(S)));
+    var done = function(){ toast("Link copied – opens with these values"); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, function(){ prompt("Copy this link:", url); });
+    else prompt("Copy this link:", url);
+  };
+  $("btnTheme").onclick = function(){
+    var root = document.documentElement;
+    var dark = root.dataset.theme ? root.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem(KEY+".theme", root.dataset.theme); } catch(e){}
+  };
+  try { var t = localStorage.getItem(KEY+".theme"); if(t) document.documentElement.dataset.theme = t; } catch(e){}
+
+  var tt;
+  function toast(msg){ var el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(function(){el.classList.remove("show");},2200); }
+
+  function net(){ var on = navigator.onLine; $("netDot").classList.toggle("off",!on); $("netTxt").textContent = on ? "Online" : "Offline – still works"; }
+  addEventListener("online", net); addEventListener("offline", net);
+
+  /* ---- offline support (works when hosted, e.g. GitHub Pages) ---- */
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http")===0) {
+    addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+  }
+
+  load(); fillInputs(); render(); net();
+})();
+</script>
+</body>
+</html>
