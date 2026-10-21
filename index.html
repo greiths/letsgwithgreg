@@ -221,6 +221,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
           <h2>Prepared by</h2>
           <div class="field"><label for="advisor">Advisor name</label><input id="advisor" type="text"></div>
           <div class="field"><label for="mobile">Mobile no.</label><input id="mobile" type="tel"></div>
+          <div class="field"><label for="email">Email</label><input id="email" type="email"></div>
 
           <p class="note">Benefits are computed from coverage using the workbook formulas (cancer booster 50%, guaranteed cash 5%, HIB-CI 0.125%, home recovery 0.0625%, palliative 10%). Premiums and living benefits are typed in from the proposal. Your inputs are saved on this device.</p>
         </div>
@@ -261,7 +262,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       </section>
 
       <footer class="foot">
-        <div><div class="sub">Prepared by</div><strong id="oAdvisor"></strong><div id="oMobile"></div></div>
+        <div><div class="sub">Prepared by</div><strong id="oAdvisor"></strong><div id="oMobile"></div><div id="oEmail"></div></div>
         <div class="disc">This is just a summarized illustration. Please refer to proposals for the full features and benefits of the plan.</div>
       </footer>
     </main>
@@ -280,11 +281,11 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     client:"MR. VALUED CLIENT", age:35, date:"", plan:"10",
     aCov:300000, aPrem:20479, aPost:5000, aHib:500, aLb30:314467, aLb40:449997,
     bCov:500000, bPrem:5585,
-    advisor:"ENGR. CARLA GAVINO", mobile:"0917-523-4564"
+    advisor:"ROMEL GRIEGO", mobile:"0961-414-4068", email:"romel.r.griego@sunlife.com.ph"
   };
   var MONEY = ["aCov","aPrem","aPost","aHib","aLb30","aLb40","bCov","bPrem"];
-  var TEXT = ["client","age","date","advisor","mobile"];
-  var KEY = "policySim.v1";
+  var TEXT = ["client","age","date","advisor","mobile","email"];
+  var KEY = "policySim.v2";
   var S = {};
 
   function $(id){ return document.getElementById(id); }
@@ -341,6 +342,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     $("oDate").textContent = fmtDate(S.date);
     $("oAdvisor").textContent = S.advisor;
     $("oMobile").textContent = S.mobile;
+    $("oEmail").textContent = S.email;
     var aName = "Sun Fit and Well Advantage " + S.plan;
     $("dTagA").textContent = aName;
     $("descA").textContent = aName + " is a participating, limited-pay whole-life critical illness (CI) product with guaranteed cash benefits. It is designed to provide you with a holistic response to your evolving protection needs, giving you the combined benefit of savings and comprehensive health protection throughout your lifetime.";
@@ -435,7 +437,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
 
   $("btnPrint").onclick = function(){ window.print(); };
   $("btnReset").onclick = function(){
-    var keep = {advisor:S.advisor, mobile:S.mobile};
+    var keep = {advisor:S.advisor, mobile:S.mobile, email:S.email};
     S = Object.assign({}, DEFAULTS, keep, {date:today()});
     history.replaceState(null,"",location.pathname);
     fillInputs(); save(); render(); toast("Reset to defaults (advisor details kept)");
