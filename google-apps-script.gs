@@ -10,12 +10,12 @@ const TOKEN = "change-me-123";
 const SHEET_NAME = "Simulations";
 
 const COLUMNS = [
-  ["savedAt","Saved at"],["client","Client"],["age","Age"],["datePrepared","Date prepared"],["plan","Plan"],
+  ["savedAt","Saved at"],["client","Client"],["age","Age"],["gender","Gender"],["smoker","Smoker class"],["datePrepared","Date prepared"],["plan","Plan"],
   ["sfwaCoverage","SFWA coverage"],["sfwaPremium","SFWA annual premium"],["yearsToPay","Years to pay"],
   ["sfwaTotalPremium","SFWA total premium"],["cancerBooster","Cancer booster"],["guaranteedCash","Guaranteed cash benefit"],
   ["hibCI","HIB (CI)"],["postHosp","Post hospitalization"],["homeRecovery","Home recovery"],["palliative","Palliative"],
   ["hibPerDay","HIB per day"],["livingBenefit30","Living benefit 30th yr"],["livingBenefit40","Living benefit 40th yr"],
-  ["assureCoverage","LifeAssure coverage"],["assurePremium","LifeAssure annual premium"],["combinedAnnual","Combined annual premium"],
+  ["assureCoverage","LifeAssure coverage"],["assurePremium","LifeAssure annual premium"],["assureTotalTo70","LifeAssure total to age 70"],["combinedAnnual","Combined annual premium"],
   ["advisor","Advisor"],["mobile","Mobile"],["email","Email"]
 ];
 
@@ -33,4 +33,9 @@ function doPost(e) {
   const row = COLUMNS.map(c => c[0] === "savedAt" ? new Date(data.savedAt) : (data[c[0]] ?? ""));
   sh.appendRow(row);
   return ContentService.createTextOutput("ok");
+}
+
+// Open the Web app URL in a browser to test: it should say "Policy simulator endpoint OK".
+function doGet() {
+  return ContentService.createTextOutput("Policy simulator endpoint OK");
 }

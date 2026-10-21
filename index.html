@@ -55,7 +55,7 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#3b2c00
 .field{display:grid;gap:4px;margin-bottom:clamp(10px,.8vw,14px)}
 .field label{font-size:var(--fs-sm);font-weight:600}
 .field small{color:var(--muted);font-size:clamp(11px,.72vw,13px)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,.8vw,12px)}
+.row2{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:clamp(8px,.8vw,12px)}
 input,select{font:inherit;width:100%;padding:clamp(8px,.6vw,11px) clamp(10px,.8vw,13px);border:1px solid var(--line);border-radius:calc(var(--radius) * .7);background:var(--surface-2);color:var(--ink)}
 input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
 .money{position:relative}
@@ -66,6 +66,20 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
 .seg button[aria-pressed="true"]{background:var(--accent);color:#3b2c00}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{padding:5px 11px;font-weight:500}
+.check{display:flex;align-items:center;gap:8px;font-size:var(--fs-sm);font-weight:600;cursor:pointer}
+.check input{width:auto;accent-color:var(--accent)}
+.rate-info{font-size:clamp(11px,.72vw,13px);padding:6px 10px;border-radius:calc(var(--radius) * .6);background:var(--surface-2);border:1px solid var(--line)}
+.rate-info.ok{border-color:color-mix(in srgb,var(--good) 45%,transparent);color:var(--good)}
+.rate-info.miss{border-color:color-mix(in srgb,#d9822b 45%,transparent);color:#b5651d}
+input[readonly]{opacity:.85;cursor:not-allowed}
+details.rates{margin-top:clamp(12px,1vw,18px);border:1px solid var(--line);border-radius:calc(var(--radius) * .7);padding:10px 12px;background:var(--surface-2)}
+details.rates summary{cursor:pointer;font-weight:700;font-size:var(--fs-sm)}
+details.rates .field{margin-bottom:8px}
+.rate-list{font-size:clamp(11px,.72vw,13px);color:var(--muted);margin:8px 0;max-height:12vw;min-height:2em;overflow:auto}
+.sched{display:grid;grid-template-columns:1fr 1.4fr .6fr 1.2fr;font-size:var(--fs-sm);font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:calc(var(--radius) * .7);overflow:hidden}
+.sched>div{padding:clamp(5px,.45vw,8px) clamp(8px,.8vw,14px);border-bottom:1px solid var(--line)}
+.sched .sh{font-weight:700;color:var(--muted);background:var(--surface-2)}
+.sched .st{font-weight:800;border-bottom:0;background:var(--alt-soft)}
 .note{font-size:clamp(11px,.72vw,13px);color:var(--muted);background:var(--surface-2);border:1px dashed var(--line);border-radius:calc(var(--radius) * .7);padding:10px 12px}
 
 /* Sheet */
@@ -187,6 +201,10 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
             <div class="field"><label for="age">Current age</label><input id="age" type="number" min="0" max="99" inputmode="numeric"></div>
             <div class="field"><label for="date">Date prepared</label><input id="date" type="date"></div>
           </div>
+          <div class="row2">
+            <div class="field"><label>Gender</label><div class="seg" role="group" aria-label="Gender"><button type="button" data-gender="M">Male</button><button type="button" data-gender="F">Female</button></div></div>
+            <div class="field"><label>Smoker</label><div class="seg" role="group" aria-label="Smoker"><button type="button" data-smoker="NS">Non</button><button type="button" data-smoker="S">Smoker</button></div></div>
+          </div>
 
           <h2>Sun Fit and Well Advantage</h2>
           <div class="field">
@@ -195,16 +213,23 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
               <button type="button" data-plan="10">10 years</button>
               <button type="button" data-plan="20">20 years</button>
             </div>
-            <small>Switching loads that plan's preset premium and living benefits.</small>
+            <small>Living benefits are dividend-based; type them from the proposal.</small>
           </div>
           <div class="field"><label for="aCov">Insurance coverage</label>
             <div class="money"><input id="aCov" type="text" inputmode="numeric"></div>
             <div class="chips" data-for="aCov"><button type="button">300000</button><button type="button">500000</button><button type="button">1000000</button></div>
           </div>
-          <div class="field"><label for="aPrem">Annual premium</label><div class="money"><input id="aPrem" type="text" inputmode="numeric"></div><small>From the official proposal for this age and coverage.</small></div>
           <div class="row2">
+            <label class="check"><input type="checkbox" id="addd"> ADDD rider</label>
+            <label class="check"><input type="checkbox" id="tdb"> TDB rider</label>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="aHib">HIB rider per day</label><div class="money"><input id="aHib" type="text" inputmode="numeric"></div><small>0 = no HIB rider</small></div>
             <div class="field"><label for="aPost">Post hospitalization</label><div class="money"><input id="aPost" type="text" inputmode="numeric"></div></div>
-            <div class="field"><label for="aHib">HIB per day (optional)</label><div class="money"><input id="aHib" type="text" inputmode="numeric"></div></div>
+          </div>
+          <div class="field"><label for="aPrem">Total annual premium</label><div class="money"><input id="aPrem" type="text" inputmode="numeric"></div>
+            <div class="rate-info" id="aRateInfo"></div>
+            <label class="check"><input type="checkbox" id="aManual"> Type premium manually</label>
           </div>
           <div class="row2">
             <div class="field"><label for="aLb30">Living benefit, 30th yr</label><div class="money"><input id="aLb30" type="text" inputmode="numeric"></div></div>
@@ -217,14 +242,45 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
             <div class="money"><input id="bCov" type="text" inputmode="numeric"></div>
             <div class="chips" data-for="bCov"><button type="button">500000</button><button type="button">1000000</button><button type="button">2000000</button></div>
           </div>
-          <div class="field"><label for="bPrem">Annual premium (current 5-yr term)</label><div class="money"><input id="bPrem" type="text" inputmode="numeric"></div><small>Premium increases every 5 years based on attained age.</small></div>
+          <div class="field"><label for="bPrem">Annual premium (current 5-yr term)</label><div class="money"><input id="bPrem" type="text" inputmode="numeric"></div>
+            <div class="rate-info" id="bRateInfo"></div>
+            <label class="check"><input type="checkbox" id="bRiders"> Include ADB + TDB riders</label>
+            <label class="check"><input type="checkbox" id="bManual"> Type premium manually</label>
+            <small>Premium increases every 5 years based on attained age.</small></div>
 
           <h2>Prepared by</h2>
           <div class="field"><label for="advisor">Advisor name</label><input id="advisor" type="text"></div>
           <div class="field"><label for="mobile">Mobile no.</label><input id="mobile" type="tel"></div>
           <div class="field"><label for="email">Email</label><input id="email" type="email"></div>
 
-          <p class="note">Benefits are computed from coverage using the workbook formulas (cancer booster 50%, guaranteed cash 5%, HIB-CI 0.125%, home recovery 0.0625%, palliative 10%). Premiums and living benefits are typed in from the proposal. Your inputs are saved on this device.</p>
+          <details class="rates" id="ratesBox">
+            <summary>Rate table · add rates from a proposal</summary>
+            <p class="sub">Type the figures from page 1 of a proposal (Proposal Information). Rates per ₱1,000 are computed and saved, so any coverage at that age, gender and smoker class will compute automatically.</p>
+            <div class="row2">
+              <div class="field"><label for="cPlan">Plan</label><select id="cPlan"><option value="SFWA10">SFWA 10</option><option value="SFWA20">SFWA 20</option><option value="ASSURE">Sun LifeAssure</option></select></div>
+              <div class="field"><label for="cAge">Age last birthday</label><input id="cAge" type="number" min="0" max="99"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="cGender">Gender</label><select id="cGender"><option value="M">Male</option><option value="F">Female</option></select></div>
+              <div class="field"><label for="cSmoker">Class</label><select id="cSmoker"><option value="NS">Non-smoker</option><option value="S">Smoker</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="cFa">Face amount</label><input id="cFa" type="text" inputmode="numeric"></div>
+              <div class="field"><label for="cBase">Basic plan premium</label><input id="cBase" type="text" inputmode="numeric"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="cAddd">ADDD / ADB premium</label><input id="cAddd" type="text" inputmode="numeric" placeholder="optional"></div>
+              <div class="field"><label for="cTdb">TDB premium</label><input id="cTdb" type="text" inputmode="numeric" placeholder="optional"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="cHibDay">HIB per day</label><input id="cHibDay" type="text" inputmode="numeric" placeholder="optional"></div>
+              <div class="field"><label for="cHib">HIB premium</label><input id="cHib" type="text" inputmode="numeric" placeholder="optional"></div>
+            </div>
+            <div class="actions"><button type="button" id="cAdd">Add rate</button><button type="button" id="cExport">Copy table</button></div>
+            <div class="rate-list" id="rateList"></div>
+          </details>
+
+          <p class="note">Benefits are computed from coverage using the workbook formulas (cancer booster 50%, guaranteed cash 5%, HIB-CI 0.125%, home recovery 0.0625%, palliative 10%). Premiums compute from the rate table (rate per ₱1,000 × coverage); if no rate exists for the age/gender, type the premium manually. Living benefits are typed in from the proposal. Your inputs are saved on this device.</p>
         </div>
       </div>
     </aside>
@@ -237,7 +293,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
           <h2 id="oClient"></h2>
         </div>
         <dl class="meta">
-          <dt>Current age</dt><dd id="oAge"></dd>
+          <dt>Age · gender · class</dt><dd id="oAge"></dd>
           <dt>Date prepared</dt><dd id="oDate"></dd>
         </dl>
       </div>
@@ -250,6 +306,11 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       </div>
 
       <div class="plans" id="plans"></div>
+
+      <section class="outlay" id="schedBox">
+        <h3>Sun LifeAssure premium schedule <span class="sub">· renews every 5 years at attained age</span></h3>
+        <div id="sched"></div>
+      </section>
 
       <section class="outlay">
         <h3>Premium outlay vs. living benefits</h3>
@@ -274,12 +335,23 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
 <script>
 (function(){
   "use strict";
+  /* Rates per ₱1,000 of coverage (HIB: per ₱1 of daily benefit): plan > component > gender-class > age.
+     Extracted from 20+ Sun Life proposals (2021–2026). LifeAssure rates come from the proposals' 5-year renewal schedules.
+     SFWA ADDD rates are from 2026 proposals; HIB rider rates are shared by SFWA 10 and 20. */
+  var HIB_RATES = {"F-NS":{"19":1.82,"23":2.08,"26":2.3,"27":2.35,"32":2.49},"M-NS":{"25":1.82,"28":1.86,"32":1.92,"36":2.04},"M-S":{"25":1.99}};
+  var RATES = {
+    SFWA10: {"base":{"F-NS":{"0":34.74,"19":45.46,"23":48.88,"26":51.92,"27":53.17,"32":59.7},"M-NS":{"0":35.05,"28":52.97,"32":57.99,"36":63.7},"M-S":{"25":53.93}},"addd":{"F-NS":{"27":4.61},"M-NS":{"32":4.51,"36":4.44}},"tdb":{"F-NS":{"0":1.67,"19":1.41,"23":1.33,"26":1.28,"27":1.27,"32":1.23},"M-NS":{"0":1.67,"28":1.27,"32":1.23,"36":1.27},"M-S":{"25":1.4}},"hib":HIB_RATES},
+    SFWA20: {"base":{"M-NS":{"25":29.04}},"tdb":{"M-NS":{"25":0.78}},"hib":HIB_RATES},
+    ASSURE: {"base":{"F-NS":{"23":7.86,"28":8.17,"33":8.7,"38":10.12,"43":12.19,"48":15.78,"53":20.62,"58":27.72,"63":46.47,"68":61.88,"26":8.1,"31":8.39,"36":9.37,"41":11.31,"46":13.97,"51":18.59,"56":24.34,"61":36.22,"66":58.44},"M-NS":{"28":8.28,"33":8.82,"38":10.56,"43":14.6,"48":19.93,"53":27.93,"58":34.56,"63":59.82,"68":80.65},"M-S":{"25":9.0,"30":9.75,"35":10.74,"40":15.26,"45":23.29,"50":33.04,"55":47.04,"60":55.38,"65":115.04}},"adb":{"F-NS":{"23":1.37,"28":1.2,"33":1.11,"38":1.07,"43":1.06,"48":1.08,"53":1.26,"58":1.55,"63":1.82,"68":2.07,"26":1.25,"31":1.13,"36":1.08,"41":1.05,"46":1.07,"51":1.15,"56":1.42,"61":1.73,"66":1.97},"M-NS":{"23":1.37,"28":1.2,"33":1.11,"38":1.07,"43":1.06,"48":1.08,"53":1.26,"58":1.55,"63":1.82,"68":2.07,"26":1.25,"31":1.13,"36":1.08,"41":1.05,"46":1.07,"51":1.15,"56":1.42,"61":1.73,"66":1.97},"F-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92},"M-S":{"25":1.28,"30":1.14,"35":1.09,"40":1.05,"45":1.06,"50":1.1,"55":1.36,"60":1.68,"65":1.92}},"tdb":{"F-NS":{"23":0.63,"28":0.71,"33":0.88,"38":1.16,"43":1.35,"48":1.94,"53":3.02,"58":6.78,"26":0.66,"31":0.8,"36":1.03,"41":1.32,"46":1.57,"51":2.55,"56":4.59},"M-NS":{"23":0.63,"28":0.71,"33":0.88,"38":1.16,"43":1.35,"48":1.94,"53":3.02,"58":6.78,"26":0.66,"31":0.8,"36":1.03,"41":1.32,"46":1.57,"51":2.55,"56":4.59},"F-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"55":5.05},"M-S":{"25":0.66,"30":0.78,"35":0.98,"40":1.35,"45":1.54,"50":2.46,"55":5.05}}}
+  };
+  var QUARTERLY = 0.275; // quarterly premium = annual × 0.275 (21,240 → 5,841)
   var PRESETS = {
     "10": { aPrem:20479, aLb30:314467, aLb40:449997 },
     "20": { aPrem:11358, aLb30:287867, aLb40:449997 }
   };
   var DEFAULTS = {
-    client:"MR. VALUED CLIENT", age:35, date:"", plan:"10",
+    client:"MR. VALUED CLIENT", age:35, date:"", plan:"10", gender:"M", smoker:"NS",
+    addd:true, tdb:true, aManual:false, bManual:false, bRiders:true,
     aCov:300000, aPrem:20479, aPost:5000, aHib:500, aLb30:314467, aLb40:449997,
     bCov:500000, bPrem:5585,
     advisor:"ROMEL GRIEGO", mobile:"0961-414-4068", email:"romel.r.griego@sunlife.com.ph"
@@ -287,6 +359,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
   var MONEY = ["aCov","aPrem","aPost","aHib","aLb30","aLb40","bCov","bPrem"];
   var TEXT = ["client","age","date","advisor","mobile","email"];
   var KEY = "policySim.v2";
+  var FLAGS = ["addd","tdb","aManual","bManual","bRiders"];
   /* Paste your Google Apps Script Web App URL here (see google-apps-script.gs) */
   var SHEET_URL = "https://script.google.com/macros/s/AKfycbwXjIiJqF9ugT7C5CufCalJF_6n9ps0uPyHwF3BDia_BWfIPsfMBh1bpNce62BQBf6OBg/exec";
   var SHEET_TOKEN = "Backspace8!"; // must match TOKEN in google-apps-script.gs
@@ -312,15 +385,83 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
   function fillInputs(){
     MONEY.forEach(function(k){ $(k).value = Number(S[k]).toLocaleString("en-PH"); });
     TEXT.forEach(function(k){ $(k).value = S[k]; });
+    FLAGS.forEach(function(k){ $(k).checked = !!S[k]; });
     document.querySelectorAll("[data-plan]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.plan===S.plan); });
+    document.querySelectorAll("[data-gender]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.gender===S.gender); });
+    document.querySelectorAll("[data-smoker]").forEach(function(b){ b.setAttribute("aria-pressed", b.dataset.smoker===S.smoker); });
+  }
+
+  /* ---- rate table (built-in + added on this device) ---- */
+  var RKEY = KEY + ".rates2";
+  function userRates(){ try { return JSON.parse(localStorage.getItem(RKEY)||"{}"); } catch(e){ return {}; } }
+  var _all = null;
+  function allRates(){
+    if (_all) return _all;
+    var out = JSON.parse(JSON.stringify(RATES)), u = userRates();
+    Object.keys(u).forEach(function(pl){ out[pl]=out[pl]||{}; Object.keys(u[pl]).forEach(function(c){ out[pl][c]=out[pl][c]||{};
+      Object.keys(u[pl][c]).forEach(function(k){ out[pl][c][k]=Object.assign({}, out[pl][c][k]||{}, u[pl][c][k]); }); }); });
+    return (_all = out);
+  }
+  /* exact rate when known; between known ages: log (base) or linear (riders) estimate.
+     Basic premiums are never extrapolated; rider rates may borrow the nearest age (≤5 yrs) or the other gender. */
+  function interp(tbl, age, mode, clamp){
+    if (!tbl) return null;
+    if (tbl[age]!=null) return {v:tbl[age], est:false};
+    var ages = Object.keys(tbl).map(Number).sort(function(a,b){return a-b;}), lo=null, hi=null;
+    ages.forEach(function(a){ if (a<age) lo=a; if (a>age && hi===null) hi=a; });
+    if (lo!==null && hi!==null){
+      var f=(age-lo)/(hi-lo), a=tbl[lo], b=tbl[hi];
+      var v = mode==="log" ? a*Math.pow(b/a,f) : a+f*(b-a);
+      return {v: Math.round(v*100)/100, est:true, lo:lo, hi:hi}; // Sun Life rates use 2 decimals
+    }
+    if (clamp){ var n = lo!==null ? lo : hi; if (n!==null && Math.abs(n-age)<=5) return {v:tbl[n], est:true, lo:n, hi:n}; }
+    return null;
+  }
+  function lookup(plan, comp, age, rider){
+    var C = (allRates()[plan]||{})[comp]||{}, key = S.gender+"-"+S.smoker;
+    var r = interp(C[key], age, (comp==="base"||plan==="ASSURE")?"log":"lin", rider);
+    if (!r && rider){ r = interp(C[(S.gender==="F"?"M":"F")+"-"+S.smoker], age, "lin", true); if (r) r.est = true; }
+    return r;
+  }
+  function per1000(rate, fa){ return rate ? Math.round(rate*fa/10)/100 : 0; }
+  function assureAt(a){
+    var b = lookup("ASSURE","base",a,false); if (!b) return null;
+    var ad = S.bRiders ? lookup("ASSURE","adb",a,true) : null;
+    var td = (S.bRiders && a<60) ? lookup("ASSURE","tdb",a,true) : null;
+    var o = { base:per1000(b.v,S.bCov), adb: ad?per1000(ad.v,S.bCov):0, tdb: td?per1000(td.v,S.bCov):0, est: b.est || !!(ad&&ad.est) || !!(td&&td.est), missing:[] };
+    if (S.bRiders && !ad) o.missing.push("ADB");
+    if (S.bRiders && a<60 && !td) o.missing.push("TDB");
+    o.total = o.base + o.adb + o.tdb;
+    return o;
   }
 
   /* ---- workbook formulas ---- */
   function compute(){
+    _all = null;
     var age = Math.max(0, Math.min(99, parseInt(S.age,10)||0));
-    var aYears = parseInt(S.plan,10);
+    var aYears = parseInt(S.plan,10), plan = "SFWA"+S.plan;
+    var ra = lookup(plan,"base",age,false), aBrk = null, aPrem = S.aPrem;
+    if (ra && !S.aManual){
+      var rd = S.addd ? lookup(plan,"addd",age,true) : null, rt = S.tdb ? lookup(plan,"tdb",age,true) : null, rh = S.aHib ? lookup(plan,"hib",age,true) : null;
+      aBrk = { base:per1000(ra.v,S.aCov), addd: rd?per1000(rd.v,S.aCov):0, tdb: rt?per1000(rt.v,S.aCov):0, hib: rh?Math.round(rh.v*S.aHib):0,
+               est: ra.est || [rd,rt,rh].some(function(x){return x&&x.est;}), missing:[] };
+      if (S.addd && !rd) aBrk.missing.push("ADDD");
+      if (S.tdb && !rt) aBrk.missing.push("TDB");
+      if (S.aHib && !rh) aBrk.missing.push("HIB");
+      aPrem = aBrk.base + aBrk.addd + aBrk.tdb + aBrk.hib;
+    }
+    // LifeAssure: level premium per 5-year block, re-rated at attained age; TDB stops at age 60
+    var bYears = Math.max(0,70-age), sched = [], bTotal = 0, complete = true;
+    for (var a=age; a<70; a+=5){
+      var pa = assureAt(a); if (!pa){ complete=false; break; }
+      var yrs = Math.min(5,70-a), tdbYrs = Math.max(0, Math.min(yrs, 60-a));
+      var sub = (pa.base+pa.adb)*yrs + pa.tdb*tdbYrs;
+      sched.push({from:a, to:a+yrs-1, yrs:yrs, p:pa, sub:sub}); bTotal += sub;
+    }
+    var bAuto = sched.length>0 && !S.bManual, bFirst = sched[0] ? sched[0].p : null;
+    var bPrem = bAuto ? bFirst.total : S.bPrem;
     var A = {
-      cov:S.aCov, prem:S.aPrem, years:aYears,
+      cov:S.aCov, prem:aPrem, years:aYears, brk:aBrk, rate:ra,
       adb:S.aCov,                     // =D10
       booster:S.aCov/2,               // =D10/2
       gcb:0.05*S.aCov,                // =0.05*D10
@@ -329,20 +470,42 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       home:0.000625*S.aCov,           // =0.000625*D10
       pall:0.1*S.aCov,                // =0.1*D10
       hib:S.aHib, ci:114, lb30:S.aLb30, lb40:S.aLb40,
-      covYears:Math.max(0,100-age), totalPaid:S.aPrem*aYears
+      covYears:Math.max(0,100-age), totalPaid:aPrem*aYears
     };
-    var bYears = Math.max(0,70-age);
     var B = {
-      cov:S.bCov, prem:S.bPrem, adb:S.bCov, ci:36,
-      covYears:bYears, firstTerm:S.bPrem*Math.min(5,bYears), atCurrent:S.bPrem*bYears
+      cov:S.bCov, prem:bPrem, auto:bAuto, first:bFirst, sched: bAuto ? sched : [], complete:complete, adb:S.bCov, ci:36,
+      covYears:bYears, total: bAuto && complete ? bTotal : bPrem*bYears, totalIsSched: bAuto && complete
     };
     return {age:age, A:A, B:B};
   }
 
   function render(){
     var r = compute(), A=r.A, B=r.B, age=r.age;
+    var who = age+" "+(S.gender==="F"?"female":"male")+", "+(S.smoker==="S"?"smoker":"non-smoker");
+    var aAuto = !!A.brk;
+    $("aPrem").readOnly = aAuto; $("bPrem").readOnly = B.auto;
+    if (aAuto && document.activeElement!==$("aPrem")) $("aPrem").value = A.prem.toLocaleString("en-PH");
+    if (B.auto && document.activeElement!==$("bPrem")) $("bPrem").value = B.prem.toLocaleString("en-PH");
+    if (!aAuto && document.activeElement!==$("aPrem")) $("aPrem").value = Number(S.aPrem).toLocaleString("en-PH");
+    if (!B.auto && document.activeElement!==$("bPrem")) $("bPrem").value = Number(S.bPrem).toLocaleString("en-PH");
+    var ai = $("aRateInfo");
+    if (aAuto){
+      ai.className = "rate-info " + (A.brk.est ? "miss" : "ok");
+      ai.textContent = (A.brk.est ? "Estimate from nearby ages (" + A.rate.v.toFixed(2) + " per ₱1,000) – verify with a proposal" : "Exact rate for "+who+" ("+A.rate.v+" per ₱1,000)")
+        + (A.brk.missing.length ? " · no rate for "+A.brk.missing.join(", ")+", not included" : "");
+    }
+    else if (A.rate){ ai.className="rate-info"; ai.textContent = "Manual. A rate exists for "+who+"; untick to auto-compute."; }
+    else { ai.className="rate-info miss"; ai.textContent = "No SFWA "+S.plan+" rate yet for "+who+". Type the premium, or add it in the Rate table."; }
+    var bi = $("bRateInfo");
+    if (B.auto){
+      bi.className = "rate-info " + (B.first.est ? "miss" : "ok");
+      bi.textContent = (B.first.est ? "Estimate from nearby ages – verify with a proposal" : "Exact rate for "+who)
+        + (B.first.missing.length ? " · no rate for "+B.first.missing.join(", ") : "") + (B.complete ? "" : " · renewal rates incomplete");
+    }
+    else if (B.first || lookup("ASSURE","base",age,false)){ bi.className="rate-info"; bi.textContent = "Manual. A rate exists; untick to auto-compute."; }
+    else { bi.className="rate-info miss"; bi.textContent = "No LifeAssure rate yet for "+who+"."; }
     $("oClient").textContent = S.client || "—";
-    $("oAge").textContent = age;
+    $("oAge").textContent = age + " · " + (S.gender==="F"?"Female":"Male") + " · " + (S.smoker==="S"?"Smoker":"Non-smoker");
     $("oDate").textContent = fmtDate(S.date);
     $("oAdvisor").textContent = S.advisor;
     $("oMobile").textContent = S.mobile;
@@ -360,7 +523,8 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     var rows = [
       ["g","Coverage & premium"],
       ["Insurance coverage", peso(A.cov), peso(B.cov)],
-      ["Annual premium", peso(A.prem), peso(B.prem)],
+      ["Annual premium", peso(A.prem) + (A.brk && A.brk.est ? " <small class='sub'>&nbsp;(estimate)</small>" : ""), peso(B.prem) + (B.auto && B.first.est ? " <small class='sub'>&nbsp;(estimate)</small>" : "") + (B.auto ? " <small class='sub'>&nbsp;first 5 yrs</small>" : "")],
+      ["Quarterly premium", peso(Math.round(A.prem*QUARTERLY*100)/100), peso(Math.round(B.prem*QUARTERLY*100)/100)],
       ["Years to pay", A.years+" years <small class='sub'>&nbsp;until age "+(age+A.years)+"</small>", "5-year renewable"],
       ["Years coverage", "Up to age 100 <small class='sub'>&nbsp;("+A.covYears+" yrs)</small>", "Up to age 70 <small class='sub'>&nbsp;("+B.covYears+" yrs)</small>"],
       ["g","Protection benefits"],
@@ -374,6 +538,12 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       ["Home recovery benefit", v(A.home), null],
       ["Palliative benefit", v(A.pall), null],
       ["Hospital income benefit / day (optional)", v(A.hib), null],
+      ["g","Annual premium breakdown"],
+      ["Basic plan", A.brk ? peso(A.brk.base) : "<span class='sub'>see total</span>", B.auto ? peso(B.first.base) : "<span class='sub'>see total</span>"],
+      ["Accidental rider <small class='sub'>&nbsp;(ADDD / ADB)</small>", A.brk ? (A.brk.addd ? peso(A.brk.addd) : null) : (S.addd ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.adb ? peso(B.first.adb) : null) : (S.bRiders ? "<span class='sub'>included</span>" : null)],
+      ["TDB rider", A.brk ? (A.brk.tdb ? peso(A.brk.tdb) : null) : (S.tdb ? "<span class='sub'>included</span>" : null), B.auto ? (B.first.tdb ? peso(B.first.tdb) : null) : (S.bRiders ? "<span class='sub'>included</span>" : null)],
+      ["HIB rider", A.brk ? (A.brk.hib ? peso(A.brk.hib) : null) : (S.aHib ? "<span class='sub'>included</span>" : null), null],
+      ["Total annual premium", "<b>"+peso(A.prem)+"</b>", "<b>"+peso(B.prem)+"</b>"],
       ["g","Living benefits"],
       ["Total living benefit, 30th year <small class='sub'>&nbsp;(age "+(age+30)+")</small>", v(A.lb30), null],
       ["Total living benefit, 40th year <small class='sub'>&nbsp;(age "+(age+40)+")</small>", v(A.lb40), null]
@@ -392,7 +562,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     var items = [
       ["Plan A total premium", A.totalPaid, "a", A.years+" yrs × "+peso(A.prem)],
       ["Plan A living benefit, 40th yr", A.lb40, "c", ""],
-      ["Plan B, first 5-yr term", B.firstTerm, "b", Math.min(5,B.covYears)+" yrs × "+peso(B.prem)]
+      ["Plan B total premium to age 70", B.total, "b", B.totalIsSched ? B.covYears+" yrs, with 5-year renewals" : B.covYears+" yrs × "+peso(B.prem)+" (today's rate)"]
     ];
     var max = Math.max.apply(null, items.map(function(i){return i[1];}).concat([1]));
     $("bars").innerHTML = items.map(function(i){
@@ -404,19 +574,28 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     $("outlayNote").textContent = (diff>=0
       ? "Plan A's 40th-year living benefit exceeds its total premiums by "+peso(diff)+". "
       : "Plan A's 40th-year living benefit is "+peso(-diff)+" below its total premiums. ")
-      + "Plan B has no living benefit; keeping it to age 70 at today's rate alone would cost "+peso(B.atCurrent)+", and actual renewals cost more.";
+      + (B.totalIsSched ? "Plan B has no living benefit; keeping it to age 70 costs "+peso(B.total)+" in total as premiums step up every 5 years."
+                         : "Plan B has no living benefit; keeping it to age 70 at today's rate alone would cost "+peso(B.total)+", and actual renewals cost more.");
+    $("schedBox").hidden = !B.sched.length;
+    $("sched").innerHTML = B.sched.length ? '<div class="sched"><div class="sh">Ages</div><div class="sh">Annual premium</div><div class="sh">Years</div><div class="sh">Subtotal</div>'
+      + B.sched.map(function(b){ return '<div>'+b.from+(b.to>b.from?'–'+b.to:'')+'</div><div>'+peso(b.p.total)+(b.p.est?' <small class="sub">est.</small>':'')+(b.p.tdb && b.from+b.yrs>60 ? ' <small class="sub">TDB to 59</small>':'')+'</div><div>'+b.yrs+'</div><div>'+peso(b.sub)+'</div>'; }).join("")
+      + '<div class="st">Total to age 70</div><div class="st"></div><div class="st">'+B.covYears+'</div><div class="st">'+(B.complete?peso(B.total):'incomplete')+'</div></div>' : "";
     document.title = "Health Plan Comparison – " + (S.client||"Client");
   }
 
   /* ---- wiring ---- */
   function onInput(e){
     var id = e.target.id;
+    if (FLAGS.indexOf(id)>-1){ S[id] = e.target.checked; save(); render(); return; }
+    if ((id==="aPrem" && $("aPrem").readOnly) || (id==="bPrem" && $("bPrem").readOnly)) return;
     if (MONEY.indexOf(id)>-1) S[id] = num(e.target.value);
     else if (TEXT.indexOf(id)>-1) S[id] = e.target.value;
     else return;
     save(); render();
   }
   function onBlur(e){
+    if (e.target.id==="aPrem" && e.target.readOnly) return;
+    if (e.target.id==="bPrem" && e.target.readOnly) return;
     if (MONEY.indexOf(e.target.id)>-1) e.target.value = Number(S[e.target.id]).toLocaleString("en-PH");
   }
   document.addEventListener("input", onInput);
@@ -427,9 +606,41 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
       S.plan = b.dataset.plan;
       Object.assign(S, PRESETS[S.plan]);
       fillInputs(); save(); render();
-      toast("Loaded SFWA "+S.plan+" preset values");
+      toast("Switched to SFWA "+S.plan);
     });
   });
+  document.querySelectorAll("[data-gender],[data-smoker]").forEach(function(b){
+    b.addEventListener("click", function(){
+      if (b.dataset.gender) S.gender = b.dataset.gender; else S.smoker = b.dataset.smoker;
+      fillInputs(); save(); render();
+    });
+  });
+
+  /* ---- rate table panel ---- */
+  function renderRateList(){
+    var all = allRates(), lines = [], NAMES={base:"basic",addd:"ADDD",adb:"ADB",tdb:"TDB",hib:"HIB"};
+    ["SFWA10","SFWA20","ASSURE"].forEach(function(pl){ var P = all[pl]||{}; Object.keys(P).forEach(function(c){ if (pl==="SFWA20" && c==="hib") return;
+      Object.keys(P[c]).forEach(function(k){ var ages = Object.keys(P[c][k]).map(Number).sort(function(a,b){return a-b;});
+        if (ages.length) lines.push(pl+" "+NAMES[c]+" "+k+": ages "+ages.join(", ")); }); }); });
+    $("rateList").innerHTML = lines.map(esc).join("<br>");
+  }
+  $("cAdd").onclick = function(){
+    var pl=$("cPlan").value, age=parseInt($("cAge").value,10), fa=num($("cFa").value), base=num($("cBase").value);
+    if (!(age>=0) || !fa || !base){ toast("Age, face amount and basic premium are required"); return; }
+    var u = userRates(), k = $("cGender").value+"-"+$("cSmoker").value;
+    function put(c,v){ u[pl]=u[pl]||{}; u[pl][c]=u[pl][c]||{}; u[pl][c][k]=u[pl][c][k]||{}; u[pl][c][k][age]=+v.toFixed(4); }
+    put("base", base/fa*1000);
+    if (num($("cAddd").value)) put(pl==="ASSURE"?"adb":"addd", num($("cAddd").value)/fa*1000);
+    if (num($("cTdb").value))  put("tdb", num($("cTdb").value)/fa*1000);
+    if (num($("cHibDay").value) && num($("cHib").value) && pl!=="ASSURE") put("hib", num($("cHib").value)/num($("cHibDay").value));
+    try { localStorage.setItem(RKEY, JSON.stringify(u)); } catch(e){}
+    renderRateList(); render(); toast("Rate saved for "+pl+" "+k+" age "+age);
+  };
+  $("cExport").onclick = function(){
+    var txt = JSON.stringify(allRates());
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(function(){ toast("Rate table copied"); }, function(){ prompt("Copy:", txt); });
+    else prompt("Copy:", txt);
+  };
   document.querySelectorAll(".chips").forEach(function(c){
     c.addEventListener("click", function(e){
       if(e.target.tagName!=="BUTTON") return;
@@ -461,7 +672,7 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
   try { var t = localStorage.getItem(KEY+".theme"); if(t) document.documentElement.dataset.theme = t; } catch(e){}
 
   var tt;
-  function toast(msg){ var el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(function(){el.classList.remove("show");},2200); }
+  function toast(msg){ var el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(function(){el.classList.remove("show");},4000); }
 
   function net(){ var on = navigator.onLine; $("netDot").classList.toggle("off",!on); $("netTxt").textContent = on ? "Online" : "Offline – still works"; }
   addEventListener("online", net); addEventListener("offline", net);
@@ -479,31 +690,40 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
     var r = compute(), A=r.A, B=r.B;
     return {
       token:SHEET_TOKEN, savedAt:new Date().toISOString(),
-      client:S.client, age:r.age, datePrepared:S.date, plan:"SFWA "+S.plan,
+      client:S.client, age:r.age, gender:S.gender, smoker:S.smoker, datePrepared:S.date, plan:"SFWA "+S.plan,
       sfwaCoverage:A.cov, sfwaPremium:A.prem, yearsToPay:A.years, sfwaTotalPremium:A.totalPaid,
       cancerBooster:A.booster, guaranteedCash:A.gcb, hibCI:A.hibCI, postHosp:A.post,
       homeRecovery:A.home, palliative:A.pall, hibPerDay:A.hib, livingBenefit30:A.lb30, livingBenefit40:A.lb40,
-      assureCoverage:B.cov, assurePremium:B.prem,
+      assureCoverage:B.cov, assurePremium:B.prem, assureTotalTo70:B.total,
       combinedAnnual:A.prem+B.prem, advisor:S.advisor, mobile:S.mobile, email:S.email
     };
   }
   function send(rec){
-    return fetch(SHEET_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(rec)});
+    // text/plain keeps this a "simple" request (no CORS preflight); Apps Script replies with readable text.
+    return fetch(SHEET_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(rec)})
+      .then(function(res){ return res.text(); })
+      .then(function(t){ t = (t||"").trim(); if (t !== "ok") throw new Error(t.indexOf("<")===0 ? "signin" : t || "error"); return t; });
   }
+  var lastErr = "";
   function flush(){
     var q = getQ(); if(!q.length || !navigator.onLine || SHEET_URL.indexOf("http")!==0) return Promise.resolve();
-    var rec = q[0];
-    return send(rec).then(function(){ var q2=getQ(); q2.shift(); setQ(q2); return flush(); }, function(){});
+    return send(q[0]).then(function(){ lastErr=""; var q2=getQ(); q2.shift(); setQ(q2); return flush(); },
+      function(e){ lastErr = e && e.message || "network"; });
+  }
+  function errText(e){
+    if (e==="unauthorized") return "Sheet rejected the token – TOKEN in Apps Script must match SHEET_TOKEN";
+    if (e==="signin" || e==="Failed to fetch") return "Sheet not reachable – set Apps Script access to \"Anyone\" and redeploy";
+    return "Upload failed ("+e+") – kept on device, will retry";
   }
   $("btnSave").onclick = function(){
     if (SHEET_URL.indexOf("http")!==0){ toast("Google Sheet not set up yet – see README"); return; }
     var q = getQ(); q.push(record()); setQ(q);
     if (!navigator.onLine){ toast("Offline – saved on device, will upload when online"); return; }
-    flush().then(function(){ toast(getQ().length ? "Saved on device, will retry upload" : "Saved to Google Sheet ✓"); });
+    flush().then(function(){ toast(getQ().length ? errText(lastErr) : "Saved to Google Sheet ✓"); });
   };
   addEventListener("online", function(){ flush(); });
 
-  load(); fillInputs(); render(); net(); setQ(getQ()); flush();
+  load(); fillInputs(); render(); renderRateList(); net(); setQ(getQ()); flush();
 })();
 </script>
 </body>
